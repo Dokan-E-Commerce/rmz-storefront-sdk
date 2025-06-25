@@ -1,10 +1,15 @@
 ![Rmz Storefront JS SdK](https://i.ibb.co/XffTrLGB/rmz-storefront-sdk-js.png)
+
+
+
 # 🛡️ RMZ.GG Storefront JS SDK
 
 [![npm version](https://badge.fury.io/js/%40rmz%2Fstorefront-sdk.svg)](https://badge.fury.io/js/%40rmz%2Fstorefront-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Security](https://img.shields.io/badge/Security-HMAC--SHA256-green)](https://tools.ietf.org/html/rfc2104)
 [![Framework Agnostic](https://img.shields.io/badge/Framework-Agnostic-purple)](https://github.com/rmz/storefront-sdk)
+
+
 Simply! Create your own store and let us handle the backend operations, payments, emails, everything! and start selling easily.
 
 A **secure**, **framework-agnostic** SDK for the RMZ Storefront API. Works seamlessly with React, Vue, Angular, Svelte, Vanilla JS, and Node.js environments.
