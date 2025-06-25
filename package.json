@@ -75,10 +75,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rmz/storefront-sdk.git"
+    "url": "https://github.com/Dokan-E-Commerce/rmz-storefront-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/rmz/storefront-sdk/issues"
+    "url": "https://github.com/Dokan-E-Commerce/rmz-storefront-sdk/issues"
   },
-  "homepage": "https://github.com/rmz/storefront-sdk#readme"
+  "homepage": "https://github.com/Dokan-E-Commerce/rmz-storefront-sdk"
 }
