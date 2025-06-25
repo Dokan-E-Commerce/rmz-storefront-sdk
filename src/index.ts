@@ -46,7 +46,7 @@ export { WishlistService } from './services/wishlist.service';
 export { CategoriesService } from './services/categories.service';
 export { OrdersService } from './services/orders.service';
 export { CheckoutService, type CheckoutRequest, type PaymentMethod, type CheckoutSession, type ShippingAddress, type BillingAddress } from './services/checkout.service';
-export { PagesService, type Page, type Menu, type MenuItem, type ContactForm } from './services/pages.service';
+export { PagesService, type Menu, type MenuItem, type ContactForm } from './services/pages.service';
 
 // Legacy types
 export type {

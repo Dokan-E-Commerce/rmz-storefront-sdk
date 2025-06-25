@@ -32,11 +32,11 @@ A **secure**, **framework-agnostic** SDK for the RMZ Storefront API. Works seaml
 ### Installation
 
 ```bash
-npm install @rmz/storefront-sdk
+npm install rmz-storefront-sdk
 # or
-yarn add @rmz/storefront-sdk
+yarn add rmz-storefront-sdk
 # or
-pnpm add @rmz/storefront-sdk
+pnpm add rmz-storefront-sdk
 ```
 
 ### Basic Usage

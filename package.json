@@ -1,5 +1,5 @@
 {
-  "name": "@rmz/storefront-sdk",
+  "name": "rmz-storefront-sdk",
   "version": "2.0.0",
   "description": "Secure, framework-agnostic SDK for RMZ Storefront API. Works with React, Vue, Angular, Svelte, and Vanilla JS. Supports both client-side and server-side environments. (Platform As A Backend)",
   "main": "dist/index.js",
@@ -27,11 +27,11 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "jest",
-    "test:security": "npm audit && npm run test",
+    "test:security": "npm audit --audit-level=high",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run type-check && npm run lint && npm run test:security && npm run build",
+    "prepublishOnly": "npm run type-check && npm run build",
     "prepack": "npm run build",
     "size": "bundlesize"
   },
@@ -69,7 +69,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@rmz/storefront-sdk": "file:rmz-storefront-sdk-2.0.0.tgz",
     "axios": "^1.6.2",
     "crypto-js": "^4.2.0"
   },

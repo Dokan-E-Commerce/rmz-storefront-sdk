@@ -30,7 +30,12 @@ interface Product {
   }>;
   categories: Category[];
   tags: string[];
-  variants?: ProductVariant[];
+  variants?: Array<{
+    id: number;
+    name: string;
+    price: number;
+    description?: string;
+  }>;
   created_at: string;
   updated_at: string;
 }
@@ -49,7 +54,7 @@ interface Category {
 }
 
 interface Cart {
-  id: string;
+  id: number;
   items: CartItem[];
   subtotal: number;
   tax: number;
@@ -65,7 +70,7 @@ interface Cart {
 }
 
 interface CartItem {
-  id: string;
+  id: number;
   product_id: number;
   product: Product;
   quantity: number;
@@ -193,11 +198,11 @@ class ProductsTable extends AdvancedTable<Product> {
     let builder = this.search(query);
     
     if (filters?.category) {
-      builder = builder.byCategory(filters.category);
+      builder = builder.eq('category', filters.category);
     }
     
     if (filters?.type) {
-      builder = builder.byType(filters.type as any);
+      builder = builder.eq('type', filters.type);
     }
     
     if (filters?.priceMin !== undefined) {
@@ -209,7 +214,7 @@ class ProductsTable extends AdvancedTable<Product> {
     }
     
     if (filters?.inStock) {
-      builder = builder.inStock();
+      builder = builder.eq('in_stock', true);
     }
     
     return builder.include('categories,images').get();
