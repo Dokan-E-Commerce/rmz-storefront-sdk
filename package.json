@@ -1,6 +1,6 @@
 {
   "name": "rmz-storefront-sdk",
-  "version": "2.0.0",
+  "version": "1.0.1",
   "description": "Secure, framework-agnostic SDK for RMZ Storefront API. Works with React, Vue, Angular, Svelte, and Vanilla JS. Supports both client-side and server-side environments. (Platform As A Backend)",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -74,7 +74,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Dokan-E-Commerce/rmz-storefront-sdk.git"
+    "url": "git+https://github.com/Dokan-E-Commerce/rmz-storefront-sdk.git"
   },
   "bugs": {
     "url": "https://github.com/Dokan-E-Commerce/rmz-storefront-sdk/issues"

@@ -240,11 +240,11 @@ export class SecureStorefrontSDK {
    */
   static createInstance(config: StorefrontConfig): SecureStorefrontSDK {
     const key = `${config.apiUrl}_${config.publicKey}`;
-    
+
     if (!this.instances.has(key)) {
       this.instances.set(key, new SecureStorefrontSDK(config));
     }
-    
+
     return this.instances.get(key)!;
   }
 
@@ -328,10 +328,10 @@ export class SecureStorefrontSDK {
       }),
 
       // Direct methods
-      getAll: async (params?: { 
-        page?: number; 
-        per_page?: number; 
-        search?: string; 
+      getAll: async (params?: {
+        page?: number;
+        per_page?: number;
+        search?: string;
         category?: string;
         sort?: string;
       }): Promise<{ data: Product[]; pagination?: any }> => {
@@ -352,10 +352,10 @@ export class SecureStorefrontSDK {
         return response.data.data;
       },
 
-      search: async (query: string, options?: { 
-        category?: string; 
-        price_min?: number; 
-        price_max?: number; 
+      search: async (query: string, options?: {
+        category?: string;
+        price_min?: number;
+        price_max?: number;
         per_page?: number;
       }): Promise<{ data: Product[]; pagination?: any }> => {
         const response = await this.http.get<ApiResponse<Product[]>>('/products/search', {
@@ -411,9 +411,9 @@ export class SecureStorefrontSDK {
         return response.data.data;
       },
 
-      getProducts: async (slug: string, params?: { 
-        page?: number; 
-        per_page?: number; 
+      getProducts: async (slug: string, params?: {
+        page?: number;
+        per_page?: number;
         sort?: string;
       }): Promise<{ data: Product[]; pagination?: any }> => {
         const response = await this.http.get<ApiResponse<Product[]>>(`/categories/${slug}/products`, params);
@@ -429,6 +429,13 @@ export class SecureStorefrontSDK {
    * Helper method to handle cart token from response
    */
   private handleCartResponse(responseData: any): any {
+    if (!responseData) {
+      throw new Error('No response data from server.');
+    }
+    // If the response is an error object from the backend, propagate the message
+    if (responseData.success === false && responseData.message) {
+      throw new Error(responseData.message);
+    }
     // Extract cart_token from response and store it
     if (responseData.cart_token) {
       this.setCartToken(responseData.cart_token);
@@ -446,7 +453,7 @@ export class SecureStorefrontSDK {
         return this.handleCartResponse(response.data.data);
       },
 
-      addItem: async (productId: number, quantity = 1, options?: { 
+      addItem: async (productId: number, quantity = 1, options?: {
         fields?: Record<string, any>;
         notice?: string;
       }): Promise<Cart> => {
@@ -526,15 +533,15 @@ export class SecureStorefrontSDK {
         console.log('SecureSDK: startPhoneAuth full response:', response);
         console.log('SecureSDK: response.data:', response.data);
         console.log('SecureSDK: response.data.data:', response.data.data);
-        
+
         // Laravel API returns: { success: true, data: { session_token: "..." }, message: "..." }
         // We need to extract the session_token from response.data.data
         const responseData = response.data as any;
-        
+
         console.log('SecureSDK: responseData keys:', Object.keys(responseData));
         console.log('SecureSDK: responseData.data:', responseData.data);
         console.log('SecureSDK: responseData.data keys:', responseData.data ? Object.keys(responseData.data) : 'undefined');
-        
+
         // Fix: Return the session_token directly from the Laravel response structure
         if (responseData.data && responseData.data.session_token) {
           console.log('SecureSDK: Found session_token:', responseData.data.session_token);
@@ -545,8 +552,8 @@ export class SecureStorefrontSDK {
         }
       },
 
-      verifyOTP: async (otp: string, sessionToken: string): Promise<{ 
-        token: string; 
+      verifyOTP: async (otp: string, sessionToken: string): Promise<{
+        token: string;
         customer: Customer;
       }> => {
         const requestBody = {
@@ -644,8 +651,8 @@ export class SecureStorefrontSDK {
         return response.data.data;
       },
 
-      getResult: async (sessionId: string): Promise<{ 
-        status: string; 
+      getResult: async (sessionId: string): Promise<{
+        status: string;
         order?: Order;
       }> => {
         const response = await this.http.get<ApiResponse<any>>(`/checkout/${sessionId}/result`);
@@ -688,9 +695,9 @@ export class SecureStorefrontSDK {
    */
   get reviews() {
     return {
-      getAll: async (params?: { 
-        page?: number; 
-        per_page?: number; 
+      getAll: async (params?: {
+        page?: number;
+        per_page?: number;
         rating?: number;
       }): Promise<{ data: Review[]; pagination?: any }> => {
         const response = await this.http.get<ApiResponse<Review[]>>('/reviews', params);
@@ -705,8 +712,8 @@ export class SecureStorefrontSDK {
         return response.data.data;
       },
 
-      submit: async (productId: number, data: { 
-        rating: number; 
+      submit: async (productId: number, data: {
+        rating: number;
         comment: string;
       }): Promise<Review> => {
         const response = await this.http.post<ApiResponse<Review>>(`/products/${productId}/reviews`, data);
@@ -735,8 +742,8 @@ export class SecureStorefrontSDK {
         return response.data.data;
       },
 
-      getProducts: async (id: number, params?: { 
-        page?: number; 
+      getProducts: async (id: number, params?: {
+        page?: number;
         per_page?: number;
       }): Promise<{ data: Product[]; pagination?: any }> => {
         const response = await this.http.get<ApiResponse<Product[]>>(`/components/${id}/products`, params);
@@ -1014,8 +1021,8 @@ export class SecureStorefrontSDK {
       await this.http.get('/health');
       return { status: 'ok' };
     } catch (error) {
-      return { 
-        status: 'error', 
+      return {
+        status: 'error',
         message: error instanceof Error ? error.message : 'Unknown error'
       };
     }
@@ -1038,8 +1045,8 @@ export function useStorefrontSDK(config: StorefrontConfig) {
   if (typeof globalThis !== 'undefined' && (globalThis as any).window && (globalThis as any).window.React) {
     const React = (globalThis as any).window.React;
     return React.useMemo(() => createStorefrontSDK(config), [
-      config.apiUrl, 
-      config.publicKey, 
+      config.apiUrl,
+      config.publicKey,
       config.environment
     ]);
   }
