@@ -36,8 +36,8 @@ export class UniversalHttpClient {
   constructor(config: Partial<HttpConfig>, security: SecurityManager) {
     this.config = {
       timeout: 30000,
-      maxRetries: 3,
-      retryDelay: 1000,
+      maxRetries: 2, // Reduced from 3 to 2
+      retryDelay: 500, // Reduced from 1000ms to 500ms
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -99,8 +99,27 @@ export class UniversalHttpClient {
           break;
         }
 
+        // Calculate retry delay with exponential backoff
+        let retryDelay = this.config.retryDelay * Math.pow(2, attempt);
+        
+        // Handle rate limiting with Retry-After header
+        const status = (error as any).status || (error as any).response?.status;
+        if (status === 429) {
+          const retryAfter = (error as any).response?.headers?.['retry-after'];
+          if (retryAfter) {
+            // Retry-After can be in seconds or HTTP date
+            const retryAfterMs = isNaN(retryAfter) 
+              ? new Date(retryAfter).getTime() - Date.now()
+              : parseInt(retryAfter) * 1000;
+            
+            if (retryAfterMs > 0 && retryAfterMs < 60000) { // Max 60 seconds
+              retryDelay = retryAfterMs;
+            }
+          }
+        }
+
         // Wait before retry
-        await this.delay(this.config.retryDelay * Math.pow(2, attempt));
+        await this.delay(retryDelay);
       }
     }
 
@@ -144,6 +163,23 @@ export class UniversalHttpClient {
       clearTimeout(timeoutId);
 
       const responseData = await this.parseResponse(response);
+
+      // Check for HTTP error status codes
+      if (!response.ok) {
+        // Create a plain object error instead of Error instance to avoid stack traces
+        const error = {
+          message: responseData.message || `HTTP ${response.status}: ${response.statusText}`,
+          response: {
+            data: responseData,
+            status: response.status,
+            statusText: response.statusText,
+            headers: this.extractHeaders(response.headers)
+          },
+          status: response.status,
+          name: 'HttpError'
+        };
+        throw error;
+      }
 
       return {
         data: responseData,
@@ -240,30 +276,62 @@ export class UniversalHttpClient {
   /**
    * Check if error should not be retried
    */
-  private shouldNotRetry(error: Error): boolean {
-    // Don't retry on client errors (4xx) except 429 (rate limit)
-    if (error.message.includes('4')) {
-      return !error.message.includes('429');
+  private shouldNotRetry(error: any): boolean {
+    // Get the HTTP status code from the error
+    const status = error.status || error.response?.status;
+    
+    if (status) {
+      // Don't retry on client errors (4xx) - these are permanent errors
+      if (status >= 400 && status < 500) {
+        // Exception: 408 (Request Timeout) and 429 (Too Many Requests) can be retried
+        return !(status === 408 || status === 429);
+      }
+      
+      // Don't retry on certain server errors that are permanent
+      if (status === 501 || status === 505) { // Not Implemented, HTTP Version Not Supported
+        return true;
+      }
     }
 
     // Don't retry on certain network errors
-    const nonRetryableErrors = ['ENOTFOUND', 'ECONNREFUSED', 'CERT_'];
-    return nonRetryableErrors.some(err => error.message.includes(err));
+    const nonRetryableErrors = ['ENOTFOUND', 'ECONNREFUSED', 'CERT_', 'ABORT_ERR'];
+    return nonRetryableErrors.some(err => error.message?.includes(err));
   }
 
   /**
    * Normalize errors across different HTTP clients
    */
-  private normalizeError(error: any): Error {
+  private normalizeError(error: any): any {
+    // If the error already has the proper structure (from our error handling), return it as-is
+    if (error.response && error.response.data) {
+      return error;
+    }
+    
     if (error.response) {
-      // Axios-style error
-      return new Error(`HTTP ${error.response.status}: ${error.response.statusText}`);
+      // Axios-style error - return as plain object
+      return {
+        message: `HTTP ${error.response.status}: ${error.response.statusText}`,
+        response: error.response,
+        status: error.response.status,
+        name: 'HttpError'
+      };
     } else if (error.status) {
-      // Fetch-style error
-      return new Error(`HTTP ${error.status}: ${error.statusText}`);
+      // Fetch-style error - return as plain object
+      return {
+        message: `HTTP ${error.status}: ${error.statusText}`,
+        status: error.status,
+        name: 'HttpError'
+      };
     } else {
-      // Network or other error
-      return error instanceof Error ? error : new Error(String(error));
+      // Network or other error - only create Error object for genuine network errors
+      if (error instanceof Error && (error.name === 'TypeError' || error.name === 'NetworkError')) {
+        return error; // Keep genuine network errors as Error objects
+      }
+      // For other errors, return as plain object
+      return {
+        message: String(error),
+        name: 'UnknownError'
+      };
     }
   }
 

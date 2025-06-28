@@ -105,9 +105,16 @@ export interface CustomField {
 
 export interface SubscriptionVariant {
   id: number;
-  duration: number;
+  duration: string;
+  duration_text: string;
+  duration_text_en: string;
   price: number;
   formatted_price: string;
+  features?: Array<{
+    id: number;
+    name: string;
+    description?: string;
+  }>;
 }
 
 export interface ProductCode {
@@ -159,7 +166,24 @@ export interface CartItem {
   quantity: number;
   unit_price: number;
   total_price: number;
-  custom_fields?: Record<string, string>;
+  pricing: {
+    base_price: number;
+    addons_price: number;
+    subscription_price: number;
+    unit_total: number;
+    formatted: {
+      base_price: string;
+      addons_price?: string | null;
+      subscription_price?: string | null;
+      unit_total: string;
+      total_price: string;
+    };
+  };
+  custom_fields?: Array<{
+    name: string;
+    value: string;
+    price: number | null;
+  }>;
   subscription_plan?: SubscriptionVariant;
   notice?: string;
   product: Product;

@@ -257,12 +257,12 @@ export class SecureStorefrontSDK {
         const response = await this.http.get<ApiResponse<Store>>('/store', {
           'X-Include': params?.include?.join(',') || ''
         });
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getCurrencies: async (): Promise<Array<{ code: string; symbol: string; name: string }>> => {
         const response = await this.http.get<ApiResponse<any>>('/store/currencies');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       changeCurrency: async (currency: string): Promise<void> => {
@@ -271,7 +271,7 @@ export class SecureStorefrontSDK {
 
       getSettings: async (): Promise<Record<string, any>> => {
         const response = await this.http.get<ApiResponse<any>>('/store/settings');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getFeatures: async (): Promise<Array<{
@@ -282,7 +282,7 @@ export class SecureStorefrontSDK {
         sort_order: number;
       }>> => {
         const response = await this.http.get<ApiResponse<any>>('/store/features');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getBanners: async (): Promise<Array<{
@@ -294,7 +294,7 @@ export class SecureStorefrontSDK {
         sort_order: number;
       }>> => {
         const response = await this.http.get<ApiResponse<any>>('/store/banners');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -311,19 +311,19 @@ export class SecureStorefrontSDK {
             get: async (): Promise<Product[]> => {
               const params = this.buildProductParams({ field, operator, value }, orderField, direction, count);
               const response = await this.http.get<ApiResponse<Product[]>>('/products', params);
-              return response.data.data;
+              return (response.data as any).data || response.data;
             }
           }),
           get: async (): Promise<Product[]> => {
             const params = this.buildProductParams({ field, operator, value }, orderField, direction);
             const response = await this.http.get<ApiResponse<Product[]>>('/products', params);
-            return response.data.data;
+            return (response.data as any).data || response.data;
           }
         }),
         get: async (): Promise<Product[]> => {
           const params = this.buildProductParams({ field, operator, value });
           const response = await this.http.get<ApiResponse<Product[]>>('/products', params);
-          return response.data.data;
+          return (response.data as any).data || response.data;
         }
       }),
 
@@ -344,12 +344,12 @@ export class SecureStorefrontSDK {
 
       getById: async (id: number): Promise<Product> => {
         const response = await this.http.get<ApiResponse<Product>>(`/products/${id}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getBySlug: async (slug: string): Promise<Product> => {
         const response = await this.http.get<ApiResponse<Product>>(`/products/${slug}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       search: async (query: string, options?: {
@@ -370,12 +370,12 @@ export class SecureStorefrontSDK {
 
       getFeatured: async (limit = 8): Promise<Product[]> => {
         const response = await this.http.get<ApiResponse<Product[]>>('/featured-products', { limit });
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getRelated: async (productId: number, limit = 4): Promise<Product[]> => {
         const response = await this.http.get<ApiResponse<Product[]>>(`/products/${productId}/related`, { limit });
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getReviews: async (productId: number, params?: { page?: number; per_page?: number }): Promise<{
@@ -398,17 +398,17 @@ export class SecureStorefrontSDK {
     return {
       getAll: async (): Promise<Category[]> => {
         const response = await this.http.get<ApiResponse<Category[]>>('/categories');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getById: async (id: number): Promise<Category> => {
         const response = await this.http.get<ApiResponse<Category>>(`/categories/${id}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getBySlug: async (slug: string): Promise<Category> => {
         const response = await this.http.get<ApiResponse<Category>>(`/categories/${slug}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getProducts: async (slug: string, params?: {
@@ -504,7 +504,7 @@ export class SecureStorefrontSDK {
 
       validate: async (): Promise<{ valid: boolean; errors?: string[] }> => {
         const response = await this.http.get<ApiResponse<any>>('/cart/validate');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getSummary: async (): Promise<{
@@ -515,7 +515,7 @@ export class SecureStorefrontSDK {
         total: number;
       }> => {
         const response = await this.http.get<ApiResponse<any>>('/cart/summary');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -564,7 +564,7 @@ export class SecureStorefrontSDK {
         const response = await this.http.post<ApiResponse<any>>('/auth/phone/verify', requestBody);
         console.log('🔍 SecureSDK: Raw API response before sanitization:', JSON.stringify(response.data, null, 2));
         console.log('🔍 SecureSDK: Extracted data (response.data.data):', JSON.stringify(response.data.data, null, 2));
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       resendOTP: async (sessionToken: string): Promise<void> => {
@@ -587,17 +587,17 @@ export class SecureStorefrontSDK {
           email: data.email,
           session_token: data.sessionToken
         });
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getProfile: async (): Promise<Customer> => {
         const response = await this.http.get<ApiResponse<Customer>>('/customer/profile');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       updateProfile: async (data: Partial<Customer>): Promise<Customer> => {
         const response = await this.http.patch<ApiResponse<Customer>>('/customer/profile', data);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       logout: async (): Promise<void> => {
@@ -624,12 +624,23 @@ export class SecureStorefrontSDK {
 
       getById: async (id: number): Promise<Order> => {
         const response = await this.http.get<ApiResponse<Order>>(`/customer/orders/${id}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getCourses: async (): Promise<any[]> => {
         const response = await this.http.get<ApiResponse<any[]>>('/customer/courses');
-        return response.data.data;
+        return (response.data as any).data || response.data;
+      },
+
+      getSubscriptions: async (): Promise<any[]> => {
+        const response = await this.http.get<ApiResponse<any[]>>('/customer/subscriptions');
+        return (response.data as any).data || response.data;
+      },
+
+      // Add submitReview for order reviews
+      submitReview: async (orderId: number, reviewData: any): Promise<any> => {
+        const response = await this.http.post<ApiResponse<any>>(`/orders/${orderId}/review`, reviewData);
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -648,7 +659,7 @@ export class SecureStorefrontSDK {
         redirect_url?: string;
       }> => {
         const response = await this.http.post<ApiResponse<any>>('/checkout');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getResult: async (sessionId: string): Promise<{
@@ -656,7 +667,7 @@ export class SecureStorefrontSDK {
         order?: Order;
       }> => {
         const response = await this.http.get<ApiResponse<any>>(`/checkout/${sessionId}/result`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -668,7 +679,7 @@ export class SecureStorefrontSDK {
     return {
       get: async (): Promise<{ items: Product[]; count: number }> => {
         const response = await this.http.get<ApiResponse<any>>('/wishlist');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       addItem: async (productId: number): Promise<void> => {
@@ -681,7 +692,7 @@ export class SecureStorefrontSDK {
 
       check: async (productId: number): Promise<{ in_wishlist: boolean }> => {
         const response = await this.http.get<ApiResponse<any>>(`/wishlist/check/${productId}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       clear: async (): Promise<void> => {
@@ -709,7 +720,7 @@ export class SecureStorefrontSDK {
 
       getRecent: async (limit = 6): Promise<Review[]> => {
         const response = await this.http.get<ApiResponse<Review[]>>('/reviews/recent', { limit });
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       submit: async (productId: number, data: {
@@ -717,12 +728,12 @@ export class SecureStorefrontSDK {
         comment: string;
       }): Promise<Review> => {
         const response = await this.http.post<ApiResponse<Review>>(`/products/${productId}/reviews`, data);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getStats: async (): Promise<any> => {
         const response = await this.http.get<ApiResponse<any>>('/reviews/stats');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -734,12 +745,12 @@ export class SecureStorefrontSDK {
     return {
       getAll: async (): Promise<any[]> => {
         const response = await this.http.get<ApiResponse<any[]>>('/components');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getById: async (id: number): Promise<any> => {
         const response = await this.http.get<ApiResponse<any>>(`/components/${id}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getProducts: async (id: number, params?: {
@@ -762,12 +773,12 @@ export class SecureStorefrontSDK {
     return {
       getAll: async (): Promise<Page[]> => {
         const response = await this.http.get<ApiResponse<Page[]>>('/pages');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getByUrl: async (url: string): Promise<Page> => {
         const response = await this.http.get<ApiResponse<Page>>(`/pages/${url}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -790,38 +801,38 @@ export class SecureStorefrontSDK {
 
       getById: async (id: number): Promise<Course> => {
         const response = await this.http.get<ApiResponse<Course>>(`/courses/${id}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getProgress: async (courseId: number): Promise<CourseProgress> => {
         const response = await this.http.get<ApiResponse<CourseProgress>>(`/courses/${courseId}/progress`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getModule: async (courseId: number, moduleId: number): Promise<CourseModule> => {
         const response = await this.http.get<ApiResponse<CourseModule>>(`/courses/${courseId}/modules/${moduleId}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       completeModule: async (courseId: number, moduleId: number): Promise<{ success: boolean }> => {
         const response = await this.http.post<ApiResponse<any>>(`/courses/${courseId}/modules/${moduleId}/complete`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       // Legacy support for customer/courses endpoints
       getCustomerCourses: async (): Promise<Course[]> => {
         const response = await this.http.get<ApiResponse<Course[]>>('/customer/courses');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getCustomerCourse: async (id: number): Promise<Course> => {
         const response = await this.http.get<ApiResponse<Course>>(`/customer/courses/${id}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getCustomerCourseModule: async (courseId: number, moduleId: number): Promise<CourseModule> => {
         const response = await this.http.get<ApiResponse<CourseModule>>(`/customer/courses/${courseId}/modules/${moduleId}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -837,7 +848,7 @@ export class SecureStorefrontSDK {
         metrics?: string[];
       }): Promise<any> => {
         const response = await this.http.get<ApiResponse<any>>('/management/analytics', params);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       updateInventory: async (data: {
@@ -846,7 +857,7 @@ export class SecureStorefrontSDK {
         operation?: 'set' | 'add' | 'subtract';
       }): Promise<{ success: boolean }> => {
         const response = await this.http.post<ApiResponse<any>>('/management/inventory/update', data);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getOrders: async (params?: {
@@ -869,7 +880,7 @@ export class SecureStorefrontSDK {
         date_to?: string;
       }): Promise<any> => {
         const response = await this.http.get<ApiResponse<any>>('/management/export/customers', params);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getWebhookData: async (params?: {
@@ -877,7 +888,7 @@ export class SecureStorefrontSDK {
         limit?: number;
       }): Promise<any[]> => {
         const response = await this.http.get<ApiResponse<any[]>>('/management/webhooks/data', params);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }
@@ -897,7 +908,7 @@ export class SecureStorefrontSDK {
         permissions: string[];
       }> => {
         const response = await this.http.post<ApiResponse<any>>('/custom/tokens', data);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       listTokens: async (): Promise<Array<{
@@ -909,12 +920,12 @@ export class SecureStorefrontSDK {
         last_used_at?: string;
       }>> => {
         const response = await this.http.get<ApiResponse<any[]>>('/custom/tokens');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       revokeToken: async (tokenId: string): Promise<{ success: boolean }> => {
         const response = await this.http.delete<ApiResponse<any>>(`/custom/tokens/${tokenId}`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getTokenStats: async (tokenId: string): Promise<{
@@ -923,7 +934,7 @@ export class SecureStorefrontSDK {
         endpoints_used: string[];
       }> => {
         const response = await this.http.get<ApiResponse<any>>(`/custom/tokens/${tokenId}/stats`);
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       validateToken: async (token: string): Promise<{
@@ -932,7 +943,7 @@ export class SecureStorefrontSDK {
         expires_at?: string;
       }> => {
         const response = await this.http.post<ApiResponse<any>>('/custom/tokens/validate', { token });
-        return response.data.data;
+        return (response.data as any).data || response.data;
       },
 
       getTokenPermissions: async (): Promise<{
@@ -940,7 +951,7 @@ export class SecureStorefrontSDK {
         permission_descriptions: Record<string, string>;
       }> => {
         const response = await this.http.get<ApiResponse<any>>('/custom/tokens/permissions');
-        return response.data.data;
+        return (response.data as any).data || response.data;
       }
     };
   }

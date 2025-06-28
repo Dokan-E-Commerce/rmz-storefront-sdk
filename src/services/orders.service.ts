@@ -53,4 +53,17 @@ export class OrdersService extends BaseService {
     const response = await this.http.get<any>(`/customer/courses/${courseId}/modules/${moduleId}`);
     return response.data!;
   }
+
+  /**
+   * Submit order review (requires authentication)
+   */
+  async submitReview(orderId: number, reviewData: {
+    rating: number;
+    comment: string;
+    item_ratings: Record<string, number>;
+    item_comments: Record<string, string>;
+  }): Promise<any> {
+    const response = await this.http.post<any>(`/customer/orders/${orderId}/review`, reviewData);
+    return response.data!;
+  }
 }

@@ -154,15 +154,15 @@ export class SecurityManager {
     // Add Bearer token for authenticated requests
     if (this.config.authToken) {
       headers['Authorization'] = `Bearer ${this.config.authToken}`;
-      console.log('DEBUG: Adding Authorization header:', `Bearer ${this.config.authToken.substring(0, 20)}...`);
+      // console.log('DEBUG: Adding Authorization header:', `Bearer ${this.config.authToken.substring(0, 20)}...`);
     } else {
-      console.log('DEBUG: No auth token available, skipping Authorization header');
+      // console.log('DEBUG: No auth token available, skipping Authorization header');
     }
 
     // Add cart token for session management
     if (this.config.cartToken) {
       headers['X-Cart-Token'] = this.config.cartToken;
-      console.log('DEBUG: Adding cart token header:', this.config.cartToken.substring(0, 10) + '...');
+      // console.log('DEBUG: Adding cart token header:', this.config.cartToken.substring(0, 10) + '...');
     }
 
     // Add signature for both server-side and client-side requests if secret key is available
@@ -374,7 +374,7 @@ export class SecurityManager {
     }
 
     // Check for success indicator
-    if (typeof response.success !== 'boolean') {
+    if (response.success !== undefined && typeof response.success !== 'boolean') {
       return false;
     }
 

@@ -72,7 +72,16 @@ export class AuthService extends BaseService {
    */
   async updateProfile(data: Partial<Customer>): Promise<Customer> {
     const response = await this.http.patch<Customer>('/customer/profile', data);
-    return response.data!;
+    
+    // Handle different response formats
+    if (response.data) {
+      return response.data;
+    } else if (response && typeof response === 'object') {
+      // If response is the customer data directly (cast to unknown first to avoid TypeScript error)
+      return response as unknown as Customer;
+    } else {
+      throw new Error('Invalid response format');
+    }
   }
 
   /**

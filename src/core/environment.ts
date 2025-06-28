@@ -22,22 +22,24 @@ export class Environment {
   }
 
   private static detect(): EnvironmentInfo {
-    // Server-side detection (Node.js)
-    const isNode = typeof process !== 'undefined' && 
-                   process.versions && 
-                   process.versions.node;
-
-    // Browser detection
-    const isBrowser = typeof globalThis !== 'undefined' && 
-                      typeof (globalThis as any).window !== 'undefined' && 
-                      typeof (globalThis as any).window.document !== 'undefined';
+    // Browser detection (most specific first)
+    const isBrowser = typeof window !== 'undefined' && 
+                      typeof window.document !== 'undefined' && 
+                      typeof window.navigator !== 'undefined';
 
     // Web Worker detection
     const isWebWorker = typeof (globalThis as any).importScripts === 'function' && 
-                        typeof (globalThis as any).navigator !== 'undefined';
+                        typeof (globalThis as any).navigator !== 'undefined' && 
+                        !isBrowser;
 
-    // Server-side is anything that's not browser or web worker
-    const isServer = !isBrowser && !isWebWorker;
+    // Server-side detection (Node.js) - only if not browser
+    const isNode = !isBrowser && 
+                   typeof process !== 'undefined' && 
+                   process.versions && 
+                   !!process.versions.node;
+
+    // Server-side is Node.js environment
+    const isServer = isNode;
 
     let platform: 'browser' | 'node' | 'webworker' | 'unknown' = 'unknown';
     if (isNode) platform = 'node';
@@ -48,7 +50,7 @@ export class Environment {
       isServer,
       isBrowser,
       isWebWorker,
-      isNode: !!isNode,
+      isNode,
       platform
     };
   }
@@ -113,25 +115,13 @@ export class Environment {
    * Get appropriate HTTP client
    */
   static getHttpClient(): any {
+    // In Next.js environment, fetch should always be available
+    // Next.js polyfills fetch for both client and server
     if (this.hasFetch()) {
       return fetch;
     }
 
-    // Fallback for Node.js environments without fetch
-    if (this.info.isServer) {
-      try {
-        // Try to use node-fetch if available
-        return require('node-fetch');
-      } catch {
-        try {
-          // Try to use axios if available
-          return require('axios');
-        } catch {
-          throw new Error('No HTTP client available. Please install node-fetch or axios for Node.js environments.');
-        }
-      }
-    }
-
-    throw new Error('No HTTP client available');
+    // If fetch is not available, something is wrong with the environment
+    throw new Error('Fetch is not available. This should not happen in a Next.js environment.');
   }
 }

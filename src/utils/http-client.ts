@@ -23,7 +23,7 @@ export class HttpClient {
 
   constructor(config: HttpClientConfig) {
     this.config = config;
-    
+
     if (!config.publicKey || !config.secretKey) {
       throw new Error('Both publicKey and secretKey are required for HMAC authentication');
     }
@@ -92,7 +92,7 @@ export class HttpClient {
       false,
       ['sign']
     );
-    
+
     const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
     const signatureArray = Array.from(new Uint8Array(signature));
     return signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -117,10 +117,10 @@ export class HttpClient {
       const baseWithSlash = this.config.baseURL.endsWith('/') ? this.config.baseURL : this.config.baseURL + '/';
       fullUrl = baseWithSlash + cleanEndpoint;
     }
-    
+
     const url = new URL(fullUrl);
     const path = url.pathname + url.search;
-    
+
     const timestamp = Math.floor(Date.now() / 1000).toString();
     const bodyString = body ? JSON.stringify(body) : '';
 
@@ -163,19 +163,61 @@ export class HttpClient {
       throw new Error(`Rate limit exceeded. Retry after ${retryAfter} seconds.`);
     }
 
+    // Parse response body
+    let responseData: any;
+    try {
+      responseData = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, create a generic error
+      const error = new Error(`Invalid JSON response: ${response.statusText}`) as any;
+      error.response = {
+        data: { message: `Invalid JSON response: ${response.statusText}` },
+        status: response.status,
+        statusText: response.statusText
+      };
+      error.status = response.status;
+      throw error;
+    }
+
     // Handle errors
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({})) as any;
-      
       // Handle authentication errors
       if (response.status === 401) {
         this.authToken = undefined;
       }
-      
-      throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+
+      // Create axios-style error for better compatibility
+      const error = new Error(responseData.message || `HTTP ${response.status}: ${response.statusText}`) as any;
+      error.response = {
+        data: responseData,
+        status: response.status,
+        statusText: response.statusText
+      };
+      error.status = response.status;
+
+      throw error;
     }
 
-    return await response.json() as ApiResponse<T>;
+    // For successful responses, return the data directly
+    // The API might return data wrapped in { data: ... } or directly
+    if (responseData && typeof responseData === 'object') {
+      // If response has a 'data' property, return it as ApiResponse format
+      if (responseData.hasOwnProperty('data')) {
+        return responseData as ApiResponse<T>;
+      } else {
+        // If response is the data directly, wrap it in ApiResponse format
+        return {
+          success: true,
+          data: responseData
+        } as ApiResponse<T>;
+      }
+    }
+
+    // Fallback for non-object responses
+    return {
+      success: true,
+      data: responseData
+    } as ApiResponse<T>;
   }
 
   // HTTP methods
