@@ -316,7 +316,7 @@ export class SecurityManager {
 
       // Allow specific legitimate tokens that are needed by the client
       const allowedTokens = [
-        'session_token', 'csrf_token', 'access_token', 'refresh_token', 'token'
+        'session_token', 'csrf_token', 'access_token', 'refresh_token', 'token', 'cart_token'
       ];
 
       for (const [key, value] of Object.entries(data)) {
