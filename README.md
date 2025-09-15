@@ -7,7 +7,6 @@
 [![npm version](https://badge.fury.io/js/%40rmz%2Fstorefront-sdk.svg)](https://badge.fury.io/js/%40rmz%2Fstorefront-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Security](https://img.shields.io/badge/Security-HMAC--SHA256-green)](https://tools.ietf.org/html/rfc2104)
-[![Framework Agnostic](https://img.shields.io/badge/Framework-Agnostic-purple)](https://github.com/rmz/storefront-sdk)
 
 
 Simply! Create your own store and let us handle the backend operations, payments, emails, everything! and start selling easily.
@@ -875,14 +874,6 @@ The SDK is optimized for minimal bundle size:
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🔗 Links
-
-- [Documentation](https://docs.rmz.gg/storefront-sdk)
-- [API Reference](https://api-docs.rmz.gg)
-- [GitHub](https://github.com/rmz/storefront-sdk)
-- [Issues](https://github.com/rmz/storefront-sdk/issues)
-- [Security Policy](SECURITY.md)
 
 ## 📞 Support
 
